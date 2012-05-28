@@ -21,6 +21,7 @@ struct irc {
 	bool sendPending;
 	std::ostream & log;
 	std::string incompleteline;
+	std::string m_nick;
 
 	inline irc()
 		: resolver(io)
@@ -28,7 +29,17 @@ struct irc {
 		, ongoingWrite(false)
 		, sendPending(false)
 		, log(std::cout)
+		, m_nick("ravbot")
 	{
+	}
+
+	inline bool connected() {
+		return socket.is_open();
+	}
+
+	inline void nick(std::string newnick) {
+		m_nick = newnick;
+		if (connected()) send_line() << "NICK " << newnick;
 	}
 
 	inline void connect(std::string hostname) {
@@ -87,12 +98,15 @@ struct irc {
 	inline void handle_line(const std::string & line) {
 		log << "<<< " << line << std::endl;
 		message m = parse(line);
+		if (!m.args.size()) return;
 		if (m.args[0] == "PING")
 			send_line() << "PONG " << m.args[1];
+		else if (m.args[0] == "INVITE")
+			send_line() << "JOIN " << m.args[2];
 	}
 
 	inline void send_registration() {
-		send_line("NICK ravbot");
+		send_line() << "NICK " << m_nick;
 		send_line("USER ravbot ravbot ravbot :Rav bot");
 	}
 
