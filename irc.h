@@ -45,6 +45,10 @@ protected:
 			socket.send_line() << "PONG " << m.args[1];
 		else if (m.args[0] == "INVITE")
 			socket.send_line() << "JOIN " << m.args[2];
+		else if (m.args[0] == "PRIVMSG") {
+			std::string name(m.prefix.begin(), m.prefix.begin()+m.prefix.find('!'));
+			log() << "<" << name << "> " << m.args[2] << std::endl;
+		}
 	}
 
 private:
