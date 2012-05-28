@@ -4,7 +4,7 @@ LDFLAGS=-lboost_system -pthread
 
 all: main
 
-main.o: main.cpp irc.h parser.h
+main.o: main.cpp irc.h parser.h linewise_socket.h stream_slurper.h
 
 parser.o: parser.cpp parser.h
 
